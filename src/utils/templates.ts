@@ -1,7 +1,7 @@
-import { readdir, readFile } from "fs/promises";
+import { readdir, readFile, writeFile, rename } from "fs/promises";
 import path from "path";
 
-import { PromptTemplate } from "../types";
+import { PromptTemplate, PromptTemplateFormValues, Frontmatter } from "../types";
 
 
 export async function getPromptTemplates(dir: string): Promise<PromptTemplate[]> {
@@ -9,6 +9,7 @@ export async function getPromptTemplates(dir: string): Promise<PromptTemplate[]>
 
   const templatesPromises = []
   for (const file of files) {
+    if (!file.endsWith('.md')) continue
     const filePath = path.join(dir, file)
     templatesPromises.push(
       readPromptTemplate(filePath)
@@ -33,6 +34,23 @@ export function parseFrontmatter(frontmatterText: string): Record<string, string
   return frontmatter
 }
 
+export function createFrontmatterContent(frontmatter: Frontmatter): string {
+  if (!frontmatter.provider && !frontmatter.model) {
+    return ''
+  }
+
+  let content = '---\n'
+  if (frontmatter.provider) {
+    content += `provider: ${frontmatter.provider}\n`
+  }
+  if (frontmatter.model) {
+    content += `model: ${frontmatter.model}\n`
+  }
+  content += '---\n'
+
+  return content
+}
+
 export async function readPromptTemplate(filePath: string): Promise<PromptTemplate> {
   const rawContent = await readFile(filePath, 'utf8')
 
@@ -55,7 +73,7 @@ export async function readPromptTemplate(filePath: string): Promise<PromptTempla
 
   return {
     name: path.parse(filePath).name,
-    content,
+    content: content.trim(),
     path: filePath,
     provider,
     model,
@@ -64,4 +82,28 @@ export async function readPromptTemplate(filePath: string): Promise<PromptTempla
 
 export function getSubtitle(template: PromptTemplate): string {
   return `${template.provider || 'Default provider'} • ${template.model || 'Default model'}`
+}
+
+export async function createOrUpdatePromptTemplate(
+  templateData: PromptTemplateFormValues,
+  initialValues: PromptTemplateFormValues,
+  dir: string
+): Promise<void> {
+  console.log('Creating or updating template:', templateData)
+  const filePath = path.join(dir, `${templateData.name}.md`)
+
+  if (templateData.name !== initialValues.name) {
+    // move the file
+    const oldFilePath = path.join(dir, `${initialValues.name}.md`)
+    await rename(oldFilePath, filePath)
+  }
+
+  const frontmatterContent = createFrontmatterContent({
+    provider: templateData.provider,
+    model: templateData.model
+  })
+
+  const fileContent = frontmatterContent + '\n' + templateData.content
+
+  await writeFile(filePath, fileContent, 'utf8')
 }

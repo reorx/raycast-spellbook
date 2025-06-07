@@ -10,9 +10,8 @@ import { PromptTemplateForm } from "./PromptTemplateForm";
 
 export function PromptTemplates() {
   const { promptTemplatesDir } = getPreferenceValues()
-  const { templates, isLoading, error } = usePromptTemplates(promptTemplatesDir)
+  const { templates, isLoading, error, setUpdatedAt } = usePromptTemplates(promptTemplatesDir)
   const { push } = useNavigation();
-
 
   if (error) {
     return <Detail markdown={`# Error loading prompt templates\n\n${error.message}`} />
@@ -47,8 +46,12 @@ export function PromptTemplates() {
                 <Action
                   icon={Icon.Pencil}
                   title="Edit Prompt Template"
+                  shortcut={{
+                    modifiers: ["cmd"],
+                    key: "e",
+                  }}
                   onAction={() => {
-                    push(<PromptTemplateForm template={template} />)
+                    push(<PromptTemplateForm template={template} setUpdatedAt={setUpdatedAt} />)
                   }}
                 />
               </ActionPanel.Section>

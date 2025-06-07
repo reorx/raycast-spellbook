@@ -8,11 +8,12 @@ export function usePromptTemplates(dir: string) {
   const [templates, setTemplates] = useState<PromptTemplate[] | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
-  const hasRun = useRef(false);
+  const [updatedAt, setUpdatedAt] = useState(0);
+  const hasRunFor = useRef(-1);
 
   useEffect(() => {
-    if (hasRun.current) return;
-    hasRun.current = true;
+    if (hasRunFor.current === updatedAt) return;
+    hasRunFor.current = updatedAt;
 
     console.log("Loading prompt templates from:", dir);
 
@@ -28,7 +29,7 @@ export function usePromptTemplates(dir: string) {
         setIsLoading(false);
       }
     })();
-  }, [dir]);
+  }, [dir, updatedAt]);
 
-  return { templates, isLoading, error };
+  return { templates, isLoading, error, setUpdatedAt };
 }

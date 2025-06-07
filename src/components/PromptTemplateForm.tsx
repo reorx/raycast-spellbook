@@ -1,18 +1,36 @@
-import { Action, ActionPanel, Form, showToast, Toast } from "@raycast/api";
+import {
+  Action, ActionPanel, Form, getPreferenceValues, showToast, Toast, useNavigation,
+} from "@raycast/api";
 import { useForm, FormValidation } from "@raycast/utils";
 
-import { PromptTemplate } from "../types";
+import { PromptTemplate, PromptTemplateFormValues } from "../types";
+import { createOrUpdatePromptTemplate } from "../utils/templates";
 
 
-export function PromptTemplateForm({template}: {
+export function PromptTemplateForm({template, setUpdatedAt}: {
   template: PromptTemplate
+  setUpdatedAt: (updatedAt: number) => void
 }) {
-  const { handleSubmit, itemProps } = useForm<PromptTemplate>({
+  const { promptTemplatesDir } = getPreferenceValues()
+  const { pop } = useNavigation()
+  const initialValues = Object.assign({}, template)
+
+  const { handleSubmit, itemProps } = useForm<PromptTemplateFormValues>({
     onSubmit(values) {
-      showToast({
-        style: Toast.Style.Success,
-        title: "Template Updated",
-        message: `${values.name} has been saved`,
+      createOrUpdatePromptTemplate(values, initialValues, promptTemplatesDir).then(() => {
+        showToast({
+          style: Toast.Style.Success,
+          title: "Template Updated",
+          message: `${values.name} has been saved`,
+        });
+        setUpdatedAt(Date.now())
+        pop()
+      }).catch((error) => {
+        showToast({
+          style: Toast.Style.Failure,
+          title: "Error",
+          message: `Error saving template: ${error}`,
+        });
       });
     },
     validation: {
@@ -37,17 +55,10 @@ export function PromptTemplateForm({template}: {
         return undefined;
       },
       content: FormValidation.Required,
-      path: FormValidation.Required,
       model: FormValidation.Required,
       provider: FormValidation.Required,
     },
-    initialValues: {
-      name: template.name,
-      content: template.content,
-      path: template.path,
-      model: template.model,
-      provider: template.provider,
-    }
+    initialValues,
   });
 
   return (
@@ -60,9 +71,8 @@ export function PromptTemplateForm({template}: {
     >
       <Form.TextField title="Name" placeholder="Template name" {...itemProps.name} />
       <Form.TextArea title="Content" placeholder="Template content..." {...itemProps.content} />
-      <Form.TextField title="Path" placeholder="File path" {...itemProps.path} />
-      <Form.TextField title="Model" placeholder="LLM model name" {...itemProps.model} />
       <Form.TextField title="Provider" placeholder="LLM provider name" {...itemProps.provider} />
+      <Form.TextField title="Model" placeholder="LLM model name" {...itemProps.model} />
     </Form>
   )
 }
