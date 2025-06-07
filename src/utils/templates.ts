@@ -92,7 +92,7 @@ export async function createOrUpdatePromptTemplate(
   console.log('Creating or updating template:', templateData)
   const filePath = path.join(dir, `${templateData.name}.md`)
 
-  if (templateData.name !== initialValues.name) {
+  if (initialValues.name && templateData.name !== initialValues.name) {
     // move the file
     const oldFilePath = path.join(dir, `${initialValues.name}.md`)
     await rename(oldFilePath, filePath)
@@ -106,4 +106,13 @@ export async function createOrUpdatePromptTemplate(
   const fileContent = frontmatterContent + '\n' + templateData.content
 
   await writeFile(filePath, fileContent, 'utf8')
+}
+
+export function initPromptTemplate(): PromptTemplateFormValues {
+  return {
+    name: '',
+    content: '',
+    model: '',
+    provider: '',
+  }
 }

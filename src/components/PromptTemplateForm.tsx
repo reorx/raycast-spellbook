@@ -8,7 +8,7 @@ import { createOrUpdatePromptTemplate } from "../utils/templates";
 
 
 export function PromptTemplateForm({template, setUpdatedAt}: {
-  template: PromptTemplate
+  template: PromptTemplate|PromptTemplateFormValues
   setUpdatedAt: (updatedAt: number) => void
 }) {
   const { promptTemplatesDir } = getPreferenceValues()
@@ -26,6 +26,7 @@ export function PromptTemplateForm({template, setUpdatedAt}: {
         setUpdatedAt(Date.now())
         pop()
       }).catch((error) => {
+        console.error(error)
         showToast({
           style: Toast.Style.Failure,
           title: "Error",
