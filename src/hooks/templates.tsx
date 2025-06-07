@@ -1,19 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 
-import { readdir, readFile } from "fs/promises";
-import path from "path";
-
 import { PromptTemplate } from "../types";
+import { getPromptTemplates } from "../utils/templates";
 
-
-async function getPromptTemplates(dir: string): Promise<PromptTemplate[]> {
-  const files = await readdir(dir)
-  const templates = await Promise.all(files.map(async (file) => ({
-    name: file,
-    content: await readFile(path.join(dir, file), 'utf8')
-  })))
-  return templates
-}
 
 export function usePromptTemplates(dir: string) {
   const [templates, setTemplates] = useState<PromptTemplate[] | null>(null)

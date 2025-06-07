@@ -20,5 +20,5 @@ export function PromptRunner({ template }: {
     return <Detail markdown={`Error loading content: ${contentError}`} />;
   }
 
-  return <Detail markdown={`# Template\n${template.content}\n\n# Selection\n${selection}\n\n# Content\n${content}`} />;
+  return <Detail markdown={`# Template\n${JSON.stringify(template)}\n\n# Selection\n${selection}\n\n# Content\n${content}`} />;
 }

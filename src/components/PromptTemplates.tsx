@@ -3,7 +3,9 @@ import {
 } from "@raycast/api";
 
 import { usePromptTemplates } from "../hooks/templates";
+import { getSubtitle } from "../utils/templates";
 import { PromptRunner } from "./PromptRunner";
+import { PromptTemplateForm } from "./PromptTemplateForm";
 
 
 export function PromptTemplates() {
@@ -29,6 +31,7 @@ export function PromptTemplates() {
         <List.Item
           key={template.name}
           title={template.name}
+          subtitle={getSubtitle(template)}
           actions={
             <ActionPanel>
               <ActionPanel.Section>
@@ -37,6 +40,15 @@ export function PromptTemplates() {
                   title="Run Prompt Template"
                   onAction={() => {
                     push(<PromptRunner template={template} />)
+                  }}
+                />
+              </ActionPanel.Section>
+              <ActionPanel.Section>
+                <Action
+                  icon={Icon.Pencil}
+                  title="Edit Prompt Template"
+                  onAction={() => {
+                    push(<PromptTemplateForm template={template} />)
                   }}
                 />
               </ActionPanel.Section>
