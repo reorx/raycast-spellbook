@@ -1,0 +1,72 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# React Hooks Development Guidelines
+
+## StrictMode-Safe useEffect Pattern
+
+When writing hooks that perform async operations in `useEffect`, always use a `useRef` guard to prevent multiple executions in React StrictMode:
+
+```tsx
+import { useEffect, useState, useRef } from "react";
+
+export function useMyHook() {
+  const [data, setData] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const hasRun = useRef(false);
+
+  useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
+
+    (async () => {
+      // Your async logic here
+      try {
+        const result = await someAsyncOperation();
+        setData(result);
+      } catch (error) {
+        // Handle error
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  return { data, loading };
+}
+```
+
+## Hook Structure Best Practices
+
+1. **State Organization**: Group related state variables together
+2. **Error Handling**: Include error state when dealing with async operations
+3. **Loading States**: Always provide loading indicators for async operations
+4. **Single Responsibility**: Each hook should have one clear purpose
+5. **StrictMode Safety**: Use `useRef` guards for effects that should only run once
+
+## Examples in Codebase
+
+- [useSelection.tsx](mdc:src/hooks/useSelection.tsx) - Text selection hook with error handling
+- [useBrowser.tsx](mdc:src/hooks/useBrowser.tsx) - Browser content fetching hook
+
+## Common Patterns
+
+### Async Data Fetching
+```tsx
+const [data, setData] = useState<T>("");
+const [loading, setLoading] = useState<boolean>(true);
+const [error, setError] = useState<unknown | null>(null);
+const hasRun = useRef(false);
+```
+
+### Error Handling
+- Use try-catch blocks in async functions
+- Set loading to false in finally block
+- Store errors in state for UI feedback
+
+### Console Logging
+- Log key operations for debugging
+- Use descriptive messages that indicate what's happening
+- Log actual values, not stale state variables
