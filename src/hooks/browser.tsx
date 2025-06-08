@@ -27,5 +27,5 @@ export function useBrowserContent() {
     })();
   }, []);
 
-  return { content, loading, error };
+  return { browserContent: content, loading, error };
 }

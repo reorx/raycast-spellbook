@@ -1,24 +1,55 @@
-import { Detail } from "@raycast/api";
+import { useMemo } from "react";
 
-import { useBrowserContent } from "../hooks/browser";
-import { useSelection } from "../hooks/selection";
+import { Detail, showToast, Toast } from "@raycast/api";
+
+import { useGenerateText } from "../hooks/ai";
+import { useRenderPrompt } from "../hooks/templates";
 import { PromptTemplate } from "../types";
+import { getPromptOptions } from "../utils/templates";
 
 
 export function PromptRunner({ template }: {
   template: PromptTemplate
 }) {
-  const { content, loading: contentLoading, error: contentError } = useBrowserContent();
-  const { selection, loading: selectionLoading } = useSelection();
-  // console.log(`selection: ---\n${selection}\n---`);
-  // console.log(`content: ${content}, selection: ${selection}`);
+  const {prompt, isLoading: isLoadingPrompt, error: promptError} = useRenderPrompt(template);
 
-  if (contentLoading || selectionLoading) {
-    return <Detail markdown="Loading..." />;
-  }
-  if (contentError) {
-    return <Detail markdown={`Error loading content: ${contentError}`} />;
+  const options = useMemo(() => getPromptOptions(template), [template]);
+
+  const { text, error, isLoading } = useGenerateText(
+    prompt, template.provider, template.model, options,
+    {
+      onStart: () => {
+        showToast({
+          style: Toast.Style.Animated,
+          title: "Generating text",
+        })
+      },
+      onError: (error) => {
+        showToast({
+          style: Toast.Style.Failure,
+          title: "Error",
+          message: `Error generating text: ${error.message}`,
+        })
+      },
+      onFinish: (usage) => {
+        console.log('Usage', usage);
+        showToast({
+          style: Toast.Style.Success,
+          title: "Text generated",
+          message: `Tokens: P=${usage.promptTokens} C=${usage.completionTokens}`,
+        })
+      }
+    }
+  );
+
+  if (promptError) {
+    return <Detail markdown={`Error rendering prompt: ${promptError}`} />;
   }
 
-  return <Detail markdown={`# Template\n${JSON.stringify(template)}\n\n# Selection\n${selection}\n\n# Content\n${content}`} />;
+  return <Detail markdown={error ? text + formatError(error) : text} isLoading={isLoadingPrompt || isLoading} />;
+}
+
+
+function formatError(error: Error): string {
+  return `\n\n> Error: ${error.message}`;
 }

@@ -1,7 +1,7 @@
 import { readdir, readFile, writeFile, rename } from "fs/promises";
 import path from "path";
 
-import { PromptTemplate, PromptTemplateFormValues, Frontmatter } from "../types";
+import { PromptTemplate, PromptTemplateFormValues, PromptOptions } from "../types";
 
 
 export async function getPromptTemplates(dir: string): Promise<PromptTemplate[]> {
@@ -34,29 +34,33 @@ export function parseFrontmatter(frontmatterText: string): Record<string, string
   return frontmatter
 }
 
-export function createFrontmatterContent(frontmatter: Frontmatter): string {
+export function createFrontmatterContent(frontmatter: Record<string, string|boolean|number|undefined>): string {
   if (!frontmatter.provider && !frontmatter.model) {
     return ''
   }
 
   let content = '---\n'
-  if (frontmatter.provider) {
-    content += `provider: ${frontmatter.provider}\n`
-  }
-  if (frontmatter.model) {
-    content += `model: ${frontmatter.model}\n`
+  for (const [key, value] of Object.entries(frontmatter)) {
+    if (value !== undefined) {
+      content += `${key}: ${value}\n`
+    }
   }
   content += '---\n'
 
   return content
 }
 
+export function parseArgumentKeys(content: string): string[] {
+  // use regex to find all {argument-key} in the content
+  const argumentKeys = content.match(/\{([^}]+)\}/g)
+  return argumentKeys?.map(key => key.slice(1, -1)) || []
+}
+
 export async function readPromptTemplate(filePath: string): Promise<PromptTemplate> {
   const rawContent = await readFile(filePath, 'utf8')
 
   let content = rawContent
-  let provider = ''
-  let model = ''
+  let frontmatter: Record<string, string> = {}
 
   // Check for frontmatter
   if (rawContent.startsWith('---\n')) {
@@ -65,18 +69,23 @@ export async function readPromptTemplate(filePath: string): Promise<PromptTempla
       const frontmatterText = rawContent.slice(4, endIndex)
       content = rawContent.slice(endIndex + 5) // Skip the closing ---\n
 
-      const frontmatter = parseFrontmatter(frontmatterText)
-      provider = frontmatter.provider || ''
-      model = frontmatter.model || ''
+      frontmatter = parseFrontmatter(frontmatterText)
     }
   }
+  // trim content
+  content = content.trim()
+
+  // check for argument keys
+  const argumentKeys = parseArgumentKeys(content)
 
   return {
     name: path.parse(filePath).name,
-    content: content.trim(),
+    content,
     path: filePath,
-    provider,
-    model,
+    argumentKeys,
+    provider: frontmatter.provider || '',
+    model: frontmatter.model || '',
+    ...frontmatter,
   }
 }
 
@@ -100,7 +109,10 @@ export async function createOrUpdatePromptTemplate(
 
   const frontmatterContent = createFrontmatterContent({
     provider: templateData.provider,
-    model: templateData.model
+    model: templateData.model,
+    temperature: templateData.temperatureString,
+    reasoning: templateData.reasoning,
+    maxTokens: templateData.maxTokensString,
   })
 
   const fileContent = frontmatterContent + '\n' + templateData.content
@@ -112,7 +124,28 @@ export function initPromptTemplate(): PromptTemplateFormValues {
   return {
     name: '',
     content: '',
-    model: '',
     provider: '',
+    model: '',
+    temperatureString: '0.5',
+    reasoning: false,
+    maxTokensString: '1000',
+  }
+}
+
+export function renderPrompt(template: PromptTemplate, variables?: Record<string, string>): string {
+  let prompt = template.content
+  if (variables) {
+    for (const [key, value] of Object.entries(variables)) {
+      prompt = prompt.replace(`{${key}}`, value)
+    }
+  }
+  return prompt
+}
+
+export function getPromptOptions(template: PromptTemplate): PromptOptions {
+  return {
+    temperature: template.temperature,
+    reasoning: template.reasoning,
+    maxTokens: template.maxTokens,
   }
 }

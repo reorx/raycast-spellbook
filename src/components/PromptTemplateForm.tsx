@@ -74,6 +74,9 @@ export function PromptTemplateForm({template, setUpdatedAt}: {
       <Form.TextArea title="Content" placeholder="Template content..." {...itemProps.content} />
       <Form.TextField title="Provider" placeholder="LLM provider name" {...itemProps.provider} />
       <Form.TextField title="Model" placeholder="LLM model name" {...itemProps.model} />
+      <Form.TextField title="Temperature" placeholder="Temperature" {...itemProps.temperatureString} />
+      <Form.Checkbox label="Enable reasoning" {...itemProps.reasoning} />
+      <Form.TextField title="Max Tokens" placeholder="Max tokens" {...itemProps.maxTokensString} />
     </Form>
   )
 }

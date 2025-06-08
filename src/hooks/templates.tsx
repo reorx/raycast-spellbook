@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 
+import { BrowserExtension, getSelectedText } from "@raycast/api";
+
 import { PromptTemplate } from "../types";
-import { getPromptTemplates } from "../utils/templates";
+import { getPromptTemplates, renderPrompt } from "../utils/templates";
 
 
 export function usePromptTemplates(dir: string) {
@@ -32,4 +34,53 @@ export function usePromptTemplates(dir: string) {
   }, [dir, updatedAt]);
 
   return { templates, isLoading, error, setUpdatedAt };
+}
+
+export function useRenderPrompt(promptTemplate: PromptTemplate) {
+  const [prompt, setPrompt] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const processRenderPrompt = async () => {
+    const args: Record<string, string> = {};
+
+    for (const key of promptTemplate.argumentKeys) {
+      switch (key) {
+        case "browser-tab":
+          try {
+            args[key] = await BrowserExtension.getContent({
+              format: "markdown",
+            })
+          } catch (err) {
+            setError(err as Error);
+            setIsLoading(false);
+            return
+          }
+          break;
+        case "selection":
+          try {
+            args[key] = await getSelectedText()
+          } catch {
+            console.info('no selection found');
+            setError(new Error('No selection found'));
+            setIsLoading(false);
+            return
+          }
+          break;
+        default:
+          args[key] = "";
+          break;
+      }
+    }
+
+    setPrompt(renderPrompt(promptTemplate, args));
+    setIsLoading(false);
+  }
+
+  useEffect(() => {
+    processRenderPrompt();
+  }, [promptTemplate])
+
+
+  return {prompt, isLoading, error}
 }

@@ -21,10 +21,10 @@
           "required": true
         },
         {
-          "name": "llmProviderCredentialsFile",
-          "description": "The file path of the LLM provider credentials",
+          "name": "providersFile",
+          "description": "The file path of the LLM providers file",
           "type": "file",
-          "title": "LLM Provider Credentials File",
+          "title": "LLM Providers File",
           "required": true
         }
       ]
@@ -61,8 +61,13 @@
     }
   ],
   "dependencies": {
+    "@ai-sdk/anthropic": "^1.2.12",
+    "@ai-sdk/google": "^1.2.19",
+    "@ai-sdk/openai": "^1.3.22",
+    "@ai-sdk/provider": "^1.1.3",
     "@raycast/api": "^1.99.4",
-    "@raycast/utils": "^1.17.0"
+    "@raycast/utils": "^1.17.0",
+    "ai": "^4.3.16"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^2.0.4",
