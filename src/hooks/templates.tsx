@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-import { BrowserExtension, getSelectedText } from "@raycast/api";
+import { BrowserExtension, Clipboard, getSelectedText } from "@raycast/api";
 
 import { PromptTemplate } from "../types";
 import { getPromptTemplates, renderPrompt } from "../utils/templates";
@@ -63,6 +63,15 @@ export function useRenderPrompt(promptTemplate: PromptTemplate) {
           } catch {
             console.info('no selection found');
             setError(new Error('No selection found'));
+            setIsLoading(false);
+            return
+          }
+          break;
+        case "clipboard":
+          try {
+            args[key] = await Clipboard.readText() || ''
+          } catch (err) {
+            setError(err as Error);
             setIsLoading(false);
             return
           }

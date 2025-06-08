@@ -3,7 +3,7 @@ import {
 } from "@raycast/api";
 
 import { usePromptTemplates } from "../hooks/templates";
-import { getSubtitle, initPromptTemplate } from "../utils/templates";
+import { defaultPromptTemplate, getSubtitle, toPromptTemplateFormValues } from "../utils/templates";
 import { PromptRunner } from "./PromptRunner";
 import { PromptTemplateForm } from "./PromptTemplateForm";
 
@@ -51,7 +51,7 @@ export function PromptTemplates() {
                     key: "e",
                   }}
                   onAction={() => {
-                    push(<PromptTemplateForm template={template} setUpdatedAt={setUpdatedAt} />)
+                    push(<PromptTemplateForm data={toPromptTemplateFormValues(template)} setUpdatedAt={setUpdatedAt} />)
                   }}
                 />
                 <Action
@@ -62,7 +62,7 @@ export function PromptTemplates() {
                     key: "n",
                   }}
                   onAction={() => {
-                    push(<PromptTemplateForm template={initPromptTemplate()} setUpdatedAt={setUpdatedAt} />)
+                    push(<PromptTemplateForm data={toPromptTemplateFormValues(defaultPromptTemplate)} setUpdatedAt={setUpdatedAt} />)
                   }}
                 />
               </ActionPanel.Section>

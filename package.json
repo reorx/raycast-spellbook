@@ -6,6 +6,22 @@
   "icon": "extension-icon.png",
   "author": "reorx",
   "license": "MIT",
+  "preferences": [
+    {
+      "name": "defaultProvider",
+      "description": "The default provider to use",
+      "type": "textfield",
+      "title": "Default Provider",
+      "required": true
+    },
+    {
+      "name": "defaultModel",
+      "description": "The default model to use",
+      "type": "textfield",
+      "title": "Default Model",
+      "required": true
+    }
+  ],
   "commands": [
     {
       "name": "run-llm-with-prompt",
@@ -38,7 +54,7 @@
         {
           "name": "promptName",
           "description": "The name of the prompt template to use",
-          "type": "text",
+          "type": "textfield",
           "title": "Prompt Name",
           "required": true
         }
@@ -53,7 +69,7 @@
         {
           "name": "promptName",
           "description": "The name of the prompt template to use",
-          "type": "text",
+          "type": "textfield",
           "title": "Prompt Name",
           "required": true
         }

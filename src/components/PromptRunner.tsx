@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { Detail, showToast, Toast } from "@raycast/api";
+import { Detail, getPreferenceValues, showToast, Toast } from "@raycast/api";
 
 import { useGenerateText } from "../hooks/ai";
 import { useRenderPrompt } from "../hooks/templates";
@@ -14,9 +14,13 @@ export function PromptRunner({ template }: {
   const {prompt, isLoading: isLoadingPrompt, error: promptError} = useRenderPrompt(template);
 
   const options = useMemo(() => getPromptOptions(template), [template]);
+  const pref = getPreferenceValues<ExtensionPreferences>();
 
-  const { text, error, isLoading } = useGenerateText(
-    prompt, template.provider, template.model, options,
+  const { text, error, isLoading, usage } = useGenerateText(
+    prompt,
+    template.provider || pref.defaultProvider,
+    template.model || pref.defaultModel,
+    options,
     {
       onStart: () => {
         showToast({
@@ -46,7 +50,15 @@ export function PromptRunner({ template }: {
     return <Detail markdown={`Error rendering prompt: ${promptError}`} />;
   }
 
-  return <Detail markdown={error ? text + formatError(error) : text} isLoading={isLoadingPrompt || isLoading} />;
+  return(
+    <Detail
+      markdown={error ? text + formatError(error) : text}
+      isLoading={isLoadingPrompt || isLoading}
+      metadata={usage ? <Detail.Metadata>
+        <Detail.Metadata.Label title="Tokens" text={`P=${usage.promptTokens} C=${usage.completionTokens}`} />
+      </Detail.Metadata> : undefined}
+    />
+  )
 }
 
 

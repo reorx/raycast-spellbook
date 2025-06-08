@@ -1,19 +1,21 @@
+/* prompt template */
+
 interface PromptTemplateBase {
   name: string
   content: string
-  provider: string
-  model: string
+  provider?: string
+  model?: string
+}
+
+export interface PromptOptions {
+  reasoning?: boolean
+  temperature?: number
+  maxTokens?: number
 }
 
 export type PromptTemplate = PromptTemplateBase & PromptOptions & {
   path: string
   argumentKeys: string[]
-}
-
-export interface PromptOptions {
-  temperature?: number
-  reasoning?: boolean
-  maxTokens?: number
 }
 
 export type PromptTemplateFormValues = PromptTemplateBase & PromptOptions & {

@@ -120,16 +120,23 @@ export async function createOrUpdatePromptTemplate(
   await writeFile(filePath, fileContent, 'utf8')
 }
 
-export function initPromptTemplate(): PromptTemplateFormValues {
+export function toPromptTemplateFormValues(template: PromptTemplate): PromptTemplateFormValues {
   return {
+    name: template.name,
+    content: template.content,
+    provider: template.provider,
+    model: template.model,
+    reasoning: template.reasoning,
+    temperatureString: template.temperature?.toString() || '',
+    maxTokensString: template.maxTokens?.toString() || '',
+  }
+}
+
+export const defaultPromptTemplate: PromptTemplate = {
     name: '',
     content: '',
-    provider: '',
-    model: '',
-    temperatureString: '0.5',
-    reasoning: false,
-    maxTokensString: '1000',
-  }
+    path: '',
+    argumentKeys: [],
 }
 
 export function renderPrompt(template: PromptTemplate, variables?: Record<string, string>): string {

@@ -3,21 +3,20 @@ import {
 } from "@raycast/api";
 import { useForm, FormValidation } from "@raycast/utils";
 
-import { PromptTemplate, PromptTemplateFormValues } from "../types";
+import { PromptTemplateFormValues } from "../types";
 import { createOrUpdatePromptTemplate } from "../utils/templates";
 
 
-export function PromptTemplateForm({template, setUpdatedAt}: {
-  template: PromptTemplate|PromptTemplateFormValues
+export function PromptTemplateForm({data, setUpdatedAt}: {
+  data: PromptTemplateFormValues
   setUpdatedAt: (updatedAt: number) => void
 }) {
   const { promptTemplatesDir } = getPreferenceValues()
   const { pop } = useNavigation()
-  const initialValues = Object.assign({}, template)
 
   const { handleSubmit, itemProps } = useForm<PromptTemplateFormValues>({
     onSubmit(values) {
-      createOrUpdatePromptTemplate(values, initialValues, promptTemplatesDir).then(() => {
+      createOrUpdatePromptTemplate(values, data, promptTemplatesDir).then(() => {
         showToast({
           style: Toast.Style.Success,
           title: "Template Updated",
@@ -56,10 +55,8 @@ export function PromptTemplateForm({template, setUpdatedAt}: {
         return undefined;
       },
       content: FormValidation.Required,
-      model: FormValidation.Required,
-      provider: FormValidation.Required,
     },
-    initialValues,
+    initialValues: data,
   });
 
   return (
