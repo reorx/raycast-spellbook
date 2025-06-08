@@ -1,3 +1,3 @@
-# LLM BYOK
+# Spellbook
 
-introduce BYOK LLMs to Raycast, and let you use them with browser tabs and text selections
+Cast prompts like a magician, with your favorite LLMs.

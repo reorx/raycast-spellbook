@@ -1,9 +1,9 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "llm-byok",
-  "title": "LLM BYOK",
-  "description": "introduce BYOK LLMs to Raycast, and let you use them with browser tabs and text selections",
-  "icon": "extension-icon.png",
+  "name": "spellbook",
+  "title": "Spellbook",
+  "description": "Cast prompts like a magician, with your favorite LLMs.",
+  "icon": "spellbook-icon.png",
   "author": "reorx",
   "license": "MIT",
   "preferences": [

@@ -1,3 +1,3 @@
-# LLM BYOK Changelog
+# Spellbook Changelog
 
 ## [Initial Version] - {PR_MERGE_DATE}
