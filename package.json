@@ -8,6 +8,20 @@
   "license": "MIT",
   "preferences": [
     {
+      "name": "promptTemplatesDir",
+      "description": "The directory of the prompt templates files",
+      "type": "directory",
+      "title": "Prompt Templates Directory",
+      "required": true
+    },
+    {
+      "name": "providersFile",
+      "description": "The file path of the LLM providers file",
+      "type": "file",
+      "title": "LLM Providers File",
+      "required": true
+    },
+    {
       "name": "defaultProvider",
       "description": "The default provider to use",
       "type": "textfield",
@@ -24,53 +38,37 @@
   ],
   "commands": [
     {
-      "name": "run-llm-with-prompt",
-      "title": "Run LLM with Prompt",
-      "description": "Run a LLM with a custom prompt to get the result",
+      "name": "cast-a-prompt",
+      "title": "Cast a Prompt",
+      "description": "Choose a prompt template to cast",
+      "mode": "view"
+    },
+    {
+      "name": "quick-cast-slot-1",
+      "title": "Quick Cast Slot 1",
+      "description": "Bind a prompt template to a quick cast slot to enable hotkey",
       "mode": "view",
       "preferences": [
         {
-          "name": "promptTemplatesDir",
-          "description": "The directory of the prompt templates files",
-          "type": "directory",
-          "title": "Prompt Templates Directory",
-          "required": true
-        },
-        {
-          "name": "providersFile",
-          "description": "The file path of the LLM providers file",
-          "type": "file",
-          "title": "LLM Providers File",
+          "name": "promptTemplateName",
+          "description": "The name of the prompt template to use",
+          "type": "textfield",
+          "title": "Prompt Template Name",
           "required": true
         }
       ]
     },
     {
-      "name": "quick-prompt-1",
-      "title": "Quick Prompt 1",
-      "description": "Quick Prompt 1",
+      "name": "quick-cast-slot-2",
+      "title": "Quick Cast Slot 2",
+      "description": "Bind a prompt template to a quick cast slot to enable hotkey",
       "mode": "view",
       "preferences": [
         {
-          "name": "promptName",
+          "name": "promptTemplateName",
           "description": "The name of the prompt template to use",
           "type": "textfield",
-          "title": "Prompt Name",
-          "required": true
-        }
-      ]
-    },
-    {
-      "name": "quick-prompt-2",
-      "title": "Quick Prompt 2",
-      "description": "Quick Prompt 2",
-      "mode": "view",
-      "preferences": [
-        {
-          "name": "promptName",
-          "description": "The name of the prompt template to use",
-          "type": "textfield",
-          "title": "Prompt Name",
+          "title": "Prompt Template Name",
           "required": true
         }
       ]
