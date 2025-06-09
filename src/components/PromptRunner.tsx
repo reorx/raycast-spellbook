@@ -16,7 +16,7 @@ export function PromptRunner({ template }: {
   const options = useMemo(() => getPromptOptions(template), [template]);
   const pref = getPreferenceValues<ExtensionPreferences>();
 
-  const { text, error, isLoading, usage } = useGenerateText(
+  const { text, error, isLoading } = useGenerateText(
     prompt,
     template.provider || pref.defaultProvider,
     template.model || pref.defaultModel,
@@ -54,9 +54,6 @@ export function PromptRunner({ template }: {
     <Detail
       markdown={error ? text + formatError(error) : text}
       isLoading={isLoadingPrompt || isLoading}
-      metadata={usage ? <Detail.Metadata>
-        <Detail.Metadata.Label title="Tokens" text={`P=${usage.promptTokens} C=${usage.completionTokens}`} />
-      </Detail.Metadata> : undefined}
     />
   )
 }
