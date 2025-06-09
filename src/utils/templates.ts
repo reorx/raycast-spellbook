@@ -157,6 +157,7 @@ export function renderPrompt(template: PromptTemplate, variables?: Record<string
   let prompt = template.content
   if (variables) {
     for (const [key, value] of Object.entries(variables)) {
+      console.log('Replacing', key, '=', value)
       prompt = prompt.replace(`{${key}}`, value)
     }
   }

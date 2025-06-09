@@ -20,7 +20,7 @@ export function getProvider(providerKey: string) {
   if (!providerConfig) {
     throw new Error(`Provider ${providerKey} is not configured`);
   }
-  console.log('Provider config', providerConfig);
+  // console.log('Provider config', providerConfig);
   let provider: ProviderV1;
   try {
     switch (providerKey) {

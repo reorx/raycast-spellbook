@@ -68,53 +68,50 @@ export function useRenderPrompt(promptTemplate: PromptTemplate) {
   const [prompt, setPrompt] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const hasRun = useRef(false);
 
   const processRenderPrompt = async () => {
     const args: Record<string, string> = {};
 
+    let err: Error | null = null;
     for (const key of promptTemplate.argumentKeys) {
-      switch (key) {
-        case "browser-tab":
-          try {
-            args[key] = await BrowserExtension.getContent({
+      try {
+        let value: string | null = null;
+        switch (key) {
+          case "browser-tab":
+            value = await BrowserExtension.getContent({
               format: "markdown",
             })
-          } catch (err) {
-            setError(err as Error);
-            setIsLoading(false);
-            return
-          }
-          break;
-        case "selection":
-          try {
-            args[key] = await getSelectedText()
-          } catch {
-            console.info('no selection found');
-            setError(new Error('No selection found'));
-            setIsLoading(false);
-            return
-          }
-          break;
-        case "clipboard":
-          try {
-            args[key] = await Clipboard.readText() || ''
-          } catch (err) {
-            setError(err as Error);
-            setIsLoading(false);
-            return
-          }
-          break;
-        default:
-          args[key] = "";
-          break;
+            break;
+          case "selection":
+            // console.log('Getting selection');
+            // Currently there's a bug in Raycast where getSelectedText() returns clipboard text the first time it's called in useEffect, then throws an error the second time if there's no text selected.
+            // although calling useEffect twice is probably caused by StrictMode, this bug makes development quite difficult.
+            value = await getSelectedText()
+            // Found a workaround from raycast chatgpt plugin, but it doesn't work any better.
+            break;
+          case "clipboard":
+            value = await Clipboard.readText() || ''
+            break;
+          default:
+            value = "";
+            break;
+        }
+        args[key] = value;
+      } catch (_err) {
+        err = _err as Error
+        break
       }
     }
-
-    setPrompt(renderPrompt(promptTemplate, args));
+    setPrompt(err ? '' : renderPrompt(promptTemplate, args));
+    setError(err);
     setIsLoading(false);
   }
 
   useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
+
     processRenderPrompt();
   }, [promptTemplate])
 

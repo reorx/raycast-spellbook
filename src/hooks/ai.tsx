@@ -40,11 +40,11 @@ export function useGenerateText(
   }
 
   const runStreamText = async (abortController: AbortController) => {
-    console.log('Running stream text', providerName, modelName, options, prompt.slice(0, 100));
+    console.log('Running stream text:\n', providerName, modelName, options, prompt.slice(0, 100), '...', prompt.slice(-100));
     // get model
     const provider = getProvider(providerName) as AnthropicProvider;
     const model = provider(modelName);
-    console.log('Model', model);
+    // console.log('Model', model);
     // TODO: implement get provider options
     // const providerOptions = getProviderOptions(promptTemplate);
 

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 
 import { Detail, getPreferenceValues, showToast, Toast } from "@raycast/api";
 
@@ -12,6 +12,7 @@ export function PromptRunner({ template }: {
   template: PromptTemplate
 }) {
   const {prompt, isLoading: isLoadingPrompt, error: promptError} = useRenderPrompt(template);
+  // console.log('prompt:', prompt.slice(0, 100))
 
   const options = useMemo(() => getPromptOptions(template), [template]);
   const pref = getPreferenceValues<ExtensionPreferences>();
@@ -62,3 +63,5 @@ export function PromptRunner({ template }: {
 function formatError(error: Error): string {
   return `\n\n> Error: ${error.message}`;
 }
+
+export const PromptRunnerMemo = memo(PromptRunner);

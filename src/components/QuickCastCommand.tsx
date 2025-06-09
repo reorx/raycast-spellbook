@@ -4,7 +4,7 @@ import { Detail, getPreferenceValues, LaunchProps, openCommandPreferences } from
 
 import { PromptTemplate } from "../types";
 import { getPromptTemplateSync } from "../utils/templates";
-import { PromptRunner } from "./PromptRunner";
+import { PromptRunnerMemo } from "./PromptRunner";
 
 
 type Props = LaunchProps & {
@@ -34,5 +34,5 @@ export default function QuickCastCommand({launchContext, slotNumber}: Props) {
     return <Detail markdown={`Please set a prompt template for slot ${slotNumber} in command preferences`} />
   }
 
-  return <PromptRunner template={template} />
+  return <PromptRunnerMemo template={template} />
 }
