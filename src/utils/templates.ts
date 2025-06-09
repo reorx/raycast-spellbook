@@ -1,3 +1,4 @@
+import { readFileSync } from "fs";
 import { readdir, readFile, writeFile, rename } from "fs/promises";
 import path from "path";
 
@@ -16,6 +17,11 @@ export async function getPromptTemplates(dir: string): Promise<PromptTemplate[]>
     )
   }
   return Promise.all(templatesPromises)
+}
+
+export function getPromptTemplateSync(dir: string, name: string): PromptTemplate {
+  const filePath = path.join(dir, `${name}.md`)
+  return readPromptTemplateSync(filePath)
 }
 
 export function parseFrontmatter(frontmatterText: string): Record<string, string> {
@@ -58,7 +64,15 @@ export function parseArgumentKeys(content: string): string[] {
 
 export async function readPromptTemplate(filePath: string): Promise<PromptTemplate> {
   const rawContent = await readFile(filePath, 'utf8')
+  return parsePromptTemplate(filePath, rawContent)
+}
 
+export function readPromptTemplateSync(filePath: string): PromptTemplate {
+  const rawContent = readFileSync(filePath, 'utf8')
+  return parsePromptTemplate(filePath, rawContent)
+}
+
+export function parsePromptTemplate(filePath: string, rawContent: string): PromptTemplate {
   let content = rawContent
   let frontmatter: Record<string, string> = {}
 

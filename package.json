@@ -38,9 +38,9 @@
   ],
   "commands": [
     {
-      "name": "cast-a-prompt",
-      "title": "Cast a Prompt",
-      "description": "Choose a prompt template to cast",
+      "name": "cast-prompt-template",
+      "title": "Cast a Prompt Template",
+      "description": "Choose a prompt template to run",
       "mode": "view"
     },
     {

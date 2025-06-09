@@ -1,8 +1,8 @@
-import { Detail } from "@raycast/api";
+import { LaunchProps } from "@raycast/api";
+
+import QuickCastCommand from "./components/QuickCastCommand";
 
 
-export default function Command() {
-  return (
-    <Detail markdown="Quick Prompt 1" />
-  )
+export default function Command(props: LaunchProps) {
+  return <QuickCastCommand slotNumber={1} {...props} />
 }

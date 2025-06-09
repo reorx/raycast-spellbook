@@ -1,11 +1,13 @@
 import {
-  Action, ActionPanel, Detail, getPreferenceValues, Icon, List, useNavigation,
+  Action, ActionPanel, Clipboard, Detail, getPreferenceValues, Icon, List,
+  showToast, useNavigation,
 } from "@raycast/api";
 
 import { usePromptTemplates } from "../hooks/templates";
 import { defaultPromptTemplate, getSubtitle, toPromptTemplateFormValues } from "../utils/templates";
 import { PromptRunner } from "./PromptRunner";
 import { PromptTemplateForm } from "./PromptTemplateForm";
+import QuickCastSlots from "./QuickCastSlots";
 
 
 export function PromptTemplates() {
@@ -36,7 +38,7 @@ export function PromptTemplates() {
               <ActionPanel.Section>
                 <Action
                   icon={Icon.Text}
-                  title="Run Prompt Template"
+                  title="Cast Prompt Template"
                   onAction={() => {
                     push(<PromptRunner template={template} />)
                   }}
@@ -63,6 +65,21 @@ export function PromptTemplates() {
                   }}
                   onAction={() => {
                     push(<PromptTemplateForm data={toPromptTemplateFormValues(defaultPromptTemplate)} setUpdatedAt={setUpdatedAt} />)
+                  }}
+                />
+                <Action
+                  icon={Icon.Hammer}
+                  title="Bind to Quick Cast Slot"
+                  shortcut={{
+                    modifiers: ["cmd"],
+                    key: "s",
+                  }}
+                  onAction={() => {
+                    Clipboard.copy(template.name)
+                    showToast({
+                      title: 'Prompt template name copied',
+                    })
+                    push(<QuickCastSlots />)
                   }}
                 />
               </ActionPanel.Section>

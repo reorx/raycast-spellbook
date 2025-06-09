@@ -10,6 +10,7 @@ export function usePromptTemplates(dir: string) {
   const [templates, setTemplates] = useState<PromptTemplate[] | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
+  // use this to trigger a re-fetch of the templates
   const [updatedAt, setUpdatedAt] = useState(0);
   const hasRunFor = useRef(-1);
 
@@ -35,6 +36,33 @@ export function usePromptTemplates(dir: string) {
 
   return { templates, isLoading, error, setUpdatedAt };
 }
+
+/*
+export function usePromptTemplate(dir: string, name: string) {
+  const [template, setTemplate] = useState<PromptTemplate | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  useEffect(() => {
+    // do nothing if no name is provided
+    if (!name) return;
+
+    (async () => {
+      setIsLoading(true);
+      try {
+        const template = await getPromptTemplate(dir, name)
+        setTemplate(template)
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error(String(err)));
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [dir, name])
+
+  return {template, isLoading, error}
+}
+*/
 
 export function useRenderPrompt(promptTemplate: PromptTemplate) {
   const [prompt, setPrompt] = useState<string>("");
